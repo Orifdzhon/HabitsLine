@@ -5,9 +5,9 @@ from authx import AuthX, AuthXConfig
 import bcrypt
 
 from fastapi.middleware.cors import CORSMiddleware
-from backend.app.models import Base, User, Habit, HabitLog
-from backend.app.database import engine, session_local
-from backend.app.schemas import UserCreate, UserResponse, UserUpdate, HabitCreate, HabitResponse, CreateHabitLog, \
+from app.models import Base, User, Habit, HabitLog
+from app.database import engine, session_local
+from app.schemas import UserCreate, UserResponse, UserUpdate, HabitCreate, HabitResponse, CreateHabitLog, \
     HabitUpdate, HabitLogResponse, Login
 
 app = FastAPI()

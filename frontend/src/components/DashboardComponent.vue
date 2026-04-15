@@ -388,7 +388,7 @@
 
 <script>
 import axios from 'axios';
-const API = 'http://127.0.0.1:8000';
+const API = '/api';
 const TOKEN_KEY = 'access_token';
 const ax = () => {
   const token = localStorage.getItem(TOKEN_KEY);

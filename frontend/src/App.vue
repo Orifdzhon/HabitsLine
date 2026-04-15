@@ -20,7 +20,7 @@
 import axios from 'axios'
 import AuthComponent from './components/AuthComponent.vue'
 import DashboardComponent from './components/DashboardComponent.vue'
-const API = 'http://127.0.0.1:8000';
+const API = '/api';
 const TOKEN_KEY = 'access_token';
 
 export default {

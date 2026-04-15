@@ -6,25 +6,34 @@ networks:
 services:
   db:
     image: postgres:15
+    container_name: postgres_db
+    restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: Oo332211oo
       POSTGRES_DB: habits_tracker
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - dev
 
   backend:
     build:
       context: ./backend
+    container_name: backend_app
+    restart: always
     environment:
-      DATABASE_URL: postgresql://user:pass@db:5432/habits
+      DATABASE_URL: postgresql://postgres:Oo332211oo@db:5432/habits_tracker
     depends_on:
       - db
+    ports:
+      - "8000:8000"
     networks:
       - dev
 
   nginx:
     image: nginx:stable-alpine
+    container_name: nginx_server
     ports:
       - "80:80"
     volumes:
@@ -33,3 +42,6 @@ services:
       - backend
     networks:
       - dev
+
+volumes:
+  postgres_data:

@@ -10,7 +10,7 @@ services:
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Oo332211oo
+      POSTGRES_PASSWORD: Oo332211oo.
       POSTGRES_DB: habits_tracker
     volumes:
       - postgres_data:/var/lib/postgresql/data

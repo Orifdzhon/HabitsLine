@@ -1,3 +1,4 @@
+document.title = "HabitsLine";
 import { createApp } from 'vue'
 import App from './App.vue'
 

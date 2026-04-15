@@ -30,6 +30,13 @@ services:
       - "8000:8000"
     networks:
       - dev
+      
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    networks:
+      - dev
 
   nginx:
     image: nginx:stable-alpine

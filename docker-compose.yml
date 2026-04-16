@@ -16,7 +16,6 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - dev
-
   backend:
     build:
       context: ./backend
@@ -26,6 +25,8 @@ services:
       DATABASE_URL: postgresql://postgres:Oo332211oo.@db:5432/habits_tracker
     depends_on:
       - db
+    ports:
+      - "8000:8000"   # 🔥 ВОТ ЭТО ДОБАВЬ
     networks:
       - dev
 
@@ -33,6 +34,8 @@ services:
     build: ./frontend
     container_name: frontend_app
     restart: always
+    ports:
+      - "3000:80"   # 🔥 ВАЖНО
     networks:
       - dev
 
@@ -49,5 +52,5 @@ services:
 #     networks:
 #       - dev
 
-# volumes:
-#   postgres_data:
+volumes:
+  postgres_data:

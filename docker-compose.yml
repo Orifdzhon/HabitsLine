@@ -36,18 +36,18 @@ services:
     networks:
       - dev
 
-  nginx:
-    image: nginx:stable-alpine
-    container_name: nginx_server
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-    depends_on:
-      - backend
-      - frontend
-    networks:
-      - dev
+#   nginx:
+#     image: nginx:stable-alpine
+#     container_name: nginx_server
+#     ports:
+#       - "80:80"
+#     volumes:
+#       - ./nginx.conf:/etc/nginx/nginx.conf
+#     depends_on:
+#       - backend
+#       - frontend
+#     networks:
+#       - dev
 
-volumes:
-  postgres_data:
+# volumes:
+#   postgres_data:

@@ -22,10 +22,8 @@ security = AuthX(config=config)
 # натсройка CORS
 
 origins = [
-    "http://localhost:8080",
-    "http://127.0.0.1:8080",
-    "http://194.67.66.146",
-    "http://194.67.66.146:80",
+    "https://habitsline.ru",
+    "https://www.habitsline.ru",
 ]
 
 app.add_middleware(

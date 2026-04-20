@@ -408,6 +408,7 @@ const FREQUENCY_GROUPS = [
   { key: 'workdays', label: 'По будням' },
   { key: 'custom', label: 'Другое' },
 ];
+const WEEKLY_TARGET_WEEKDAY = 1; // Monday (0 = Sunday)
 
 function getMonthDays() {
   const today = new Date();
@@ -492,9 +493,7 @@ export default {
       return this.habits.length;
     },
     monthTotalCount() {
-      if (!this.habits.length) return 0;
-      const todayDay = new Date().getDate();
-      return this.habits.length * todayDay;
+      return this.monthProgressStats.total;
     },
     todayDoneCount() {
       return this.habits.reduce((count, habit) => (
@@ -504,15 +503,34 @@ export default {
       ), 0);
     },
     monthDoneCount() {
-      const now = new Date();
-      const y = now.getFullYear();
-      const m = now.getMonth();
-      const lastIncludedDay = now.getDate();
-      return this.logs.filter((l) => {
-        if (l.status !== 'done') return false;
-        const logDate = new Date(`${l.date}T00:00:00`);
-        return logDate.getFullYear() === y && logDate.getMonth() === m && logDate.getDate() <= lastIncludedDay;
-      }).length;
+      return this.monthProgressStats.done;
+    },
+    monthProgressStats() {
+      const today = new Date();
+      const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+      const habitIds = new Set(this.habits.map(h => h.id));
+
+      const total = this.habits.reduce((sum, habit) => (
+        sum + this.countScheduledDaysForHabit(habit, monthStart, today)
+      ), 0);
+
+      const uniqueDoneKeys = new Set();
+      this.logs.forEach((log) => {
+        if (log.status !== 'done') return;
+        if (!habitIds.has(log.habit_id)) return;
+        const habit = this.habits.find(h => h.id === log.habit_id);
+        if (!habit) return;
+        const logDate = new Date(`${log.date}T00:00:00`);
+        if (Number.isNaN(logDate.getTime())) return;
+        if (logDate < monthStart || logDate > today) return;
+        if (!this.isHabitScheduledForDate(habit, logDate)) return;
+        uniqueDoneKeys.add(`${habit.id}-${log.date}`);
+      });
+
+      return {
+        done: uniqueDoneKeys.size,
+        total,
+      };
     },
     todayProgressPercent() {
       if (!this.todayTotalCount) return 0;
@@ -558,8 +576,35 @@ export default {
     async loadLogs() {
       try {
         const { data } = await ax().get(`${API}/habit_logs`);
-        this.logs = data;
+        const habitIds = new Set(this.habits.map(h => h.id));
+        this.logs = data.filter(log => habitIds.has(log.habit_id));
       } catch (e) { console.error(e); }
+    },
+    isHabitScheduledForDate(habit, date) {
+      if (!habit || !date) return false;
+      const day = date.getDay();
+      switch (habit.frequency) {
+        case 'daily':
+          return true;
+        case 'workdays':
+          return day >= 1 && day <= 5;
+        case 'weekly':
+          return day === WEEKLY_TARGET_WEEKDAY;
+        case 'custom':
+        default:
+          return true;
+      }
+    },
+    countScheduledDaysForHabit(habit, startDate, endDate) {
+      if (!habit || !startDate || !endDate || startDate > endDate) return 0;
+      let count = 0;
+      const cursor = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+      const limit = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+      while (cursor <= limit) {
+        if (this.isHabitScheduledForDate(habit, cursor)) count += 1;
+        cursor.setDate(cursor.getDate() + 1);
+      }
+      return count;
     },
 
     async addHabit() {
